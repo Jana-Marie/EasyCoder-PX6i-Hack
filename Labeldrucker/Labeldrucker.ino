@@ -1,7 +1,7 @@
 #define AIN     A0
 #define OUT     9
-#define FILT    0.99F
-#define TRIG    0.25F
+#define FILT    0.45F
+#define TRIG    0.02F
 #define ONTIME  80
 
 struct var {
@@ -14,37 +14,43 @@ struct var {
 
 void setup() {
   pinMode(AIN, INPUT);
-  pinMode(OUT, INPUT);
+  pinMode(OUT, OUTPUT);
+  digitalWrite(OUT,HIGH);
   pinMode(LED_BUILTIN, OUTPUT);
-  //Serial.begin(115200);
+  Serial.begin(115200);
   v.state = 1;
   v.ain = analogRead(AIN);
   v.avg = analogRead(AIN);
 }
 
 void loop() {
-  if (analogRead(AIN) > 400) {
+  if (analogRead(AIN) > 200) {
     v.ain = analogRead(AIN);
     v.avg = FILT * v.avg + ((1.0F - FILT) * v.ain);
+    
+    Serial.print(v.ain);
+    Serial.print(" ");
+    Serial.println(v.avg);
+
     v.delt = v.ain - v.avg;
     if ( v.delt > TRIG) {
-      digitalWrite(LED_BUILTIN, 0);
       WriteIO(OUT, 0);
       delay(ONTIME);
-      digitalWrite(LED_BUILTIN, 1);
       WriteIO(OUT, 1);
     }
   } else {
     v.ain = analogRead(AIN);
     v.avg = analogRead(AIN);
   }
-  //Serial.println(v.delt);
+//  Serial.println(v.avg);
 }
 
 void WriteIO(int io, bool state) {
-  if (state == 1) pinMode(io, INPUT);
+  digitalWrite(LED_BUILTIN, state);
+  //if (state == 1) pinMode(io, INPUT);
+  if (state == 1) digitalWrite(io, HIGH);
   if (state == 0) {
-    pinMode(io, OUTPUT);
+    //pinMode(io, OUTPUT);
     digitalWrite(io, LOW);
   }
 }
