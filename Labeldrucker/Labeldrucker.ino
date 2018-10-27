@@ -3,6 +3,7 @@
 #define FILT    0.45F
 #define TRIG    0.02F
 #define ONTIME  80
+#define DELAY   100
 
 struct var {
   float ain;
@@ -34,6 +35,7 @@ void loop() {
 
     v.delt = v.ain - v.avg;
     if ( v.delt > TRIG) {
+      delay(DELAY);
       WriteIO(OUT, 0);
       delay(ONTIME);
       WriteIO(OUT, 1);
