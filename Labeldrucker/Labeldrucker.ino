@@ -1,10 +1,11 @@
 #define AIN     A0
 #define OUT     9
-#define FILT    0.45F
-#define TRIG    0.01F
-#define ONTIME  20
-#define DELAY   10
-#define STEP    2
+#define STEPPIN    2
+
+#define FILT        0.45F
+#define TRIG        0.01F
+#define ONTIME      20
+#define DELAYSTEPS  200
 
 struct var {
   float ain;
@@ -21,7 +22,7 @@ void cnt_isr() {
 void setup() {
   pinMode(AIN, INPUT);
   pinMode(OUT, OUTPUT);
-  pinMode(STEP, INPUT);
+  pinMode(STEPPIN, INPUT);
   digitalWrite(OUT, HIGH);
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
@@ -29,7 +30,7 @@ void setup() {
   v.ain = analogRead(AIN);
   v.avg = analogRead(AIN);
 
-  attachInterrupt(digitalPinToInterrupt(STEP), cnt_isr, RISING);
+  attachInterrupt(digitalPinToInterrupt(STEPPIN), cnt_isr, RISING);
 }
 
 void loop() {
@@ -37,16 +38,16 @@ void loop() {
     v.ain = analogRead(AIN);
     v.avg = FILT * v.avg + ((1.0F - FILT) * v.ain);
 
-    //Serial.print(v.ain);
-    //Serial.print(" ");
     Serial.println(v.cnt);
 
     v.delt = v.ain - v.avg;
     if ( v.delt > TRIG) {
       v.cnt = 0;
-      while (true) {
-        if (v.cnt > DELAY) break;
-      }
+      //delay(1);
+      do {
+        //Serial.println(v.cnt);
+        delayMicroseconds(15);
+      } while (v.cnt < DELAYSTEPS);
       Serial.println(v.cnt);
       WriteIO(OUT, 0);
       delay(ONTIME);
