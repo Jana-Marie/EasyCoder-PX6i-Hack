@@ -1,2 +1,3 @@
 # EasyCoder-PX6i-Hack
-https://twitter.com/JanHenrikH/status/1054125704772771840
+
+Allow your PX6i to work with more third party labels by improving the label detection signal
